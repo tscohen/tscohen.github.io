@@ -21,8 +21,8 @@ jobs:
     steps:
       - name: Checkout content 📦
         uses: actions/checkout@v4
-        with:
-          path: content
+        # No path — checks out to workspace root so .git is discoverable
+        # by the deploy action at the end of this workflow.
 
       - name: Clone al-folio theme 🎨
         uses: actions/checkout@v4
@@ -62,24 +62,24 @@ jobs:
       - name: Overlay custom content 📝
         run: |
           # Overwrite about page
-          cp content/_pages/about.md site/_pages/about.md
+          cp _pages/about.md site/_pages/about.md
 
           # Overwrite bibliography
-          cp content/_bibliography/papers.bib site/_bibliography/papers.bib
+          cp _bibliography/papers.bib site/_bibliography/papers.bib
 
-          # Copy profile photo (downloaded below) or user-supplied images
-          if [ -d "content/assets/img" ]; then
-            cp -r content/assets/img/. site/assets/img/
+          # Copy user-supplied images if present
+          if [ -d "assets/img" ]; then
+            cp -r assets/img/. site/assets/img/
           fi
 
       - name: Download profile photo 🖼️
         run: |
           mkdir -p site/assets/img
-          # Use user-supplied photo if present, otherwise fetch from WordPress
+          # If user has not committed a photo, fetch it from WordPress CDN
           if [ ! -f "site/assets/img/prof_pic.jpg" ]; then
             wget -q -O site/assets/img/prof_pic.jpg \
               "https://tacocohen.files.wordpress.com/2022/06/screen-shot-2022-06-20-at-10.57.05-2-edited.png" \
-              || echo "Warning: could not download profile photo"
+              || echo "Warning: profile photo download failed — site will build without it"
           fi
 
       - name: Setup Ruby 💎
