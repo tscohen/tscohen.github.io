@@ -1,0 +1,115 @@
+name: Deploy site
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "_bibliography/**"
+      - "_pages/**"
+      - "assets/**"
+      - "**.yml"
+      - "!.github/workflows/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout content 📦
+        uses: actions/checkout@v4
+        with:
+          path: content
+
+      - name: Clone al-folio theme 🎨
+        uses: actions/checkout@v4
+        with:
+          repository: alshedivat/al-folio
+          path: site
+
+      - name: Configure site ⚙️
+        run: |
+          python3 << 'PYEOF'
+          import re
+
+          with open('site/_config.yml', 'r') as f:
+              cfg = f.read()
+
+          # Basic site identity
+          cfg = re.sub(r'^name:.*$',        'name: Taco Cohen',                              cfg, flags=re.M)
+          cfg = re.sub(r'^email:.*$',       'email: taco.cohen@gmail.com',                   cfg, flags=re.M)
+          cfg = re.sub(r'^url:.*$',         'url: https://tscohen.github.io',                cfg, flags=re.M)
+          cfg = re.sub(r'^baseurl:.*$',     'baseurl: ""',                                   cfg, flags=re.M)
+          cfg = re.sub(r'^description:.*$', 'description: >-',                               cfg, flags=re.M)
+
+          # Social / academic profiles
+          cfg = re.sub(r'github_username:.*',  'github_username: tscohen',           cfg)
+          cfg = re.sub(r'twitter_username:.*', 'twitter_username: TacoCohen',        cfg)
+          cfg = re.sub(r'linkedin_username:.*','linkedin_username: tacocohen',        cfg)
+          cfg = re.sub(r'scholar_userid:.*',   'scholar_userid: a3q4YxEAAAAJ',       cfg)
+
+          # Scholar author highlighting
+          cfg = re.sub(r'last_name:\s*\[.*?\]',  'last_name: [Cohen]',               cfg)
+          cfg = re.sub(r'first_name:\s*\[.*?\]', 'first_name: [Taco S., Taco]',      cfg)
+
+          with open('site/_config.yml', 'w') as f:
+              f.write(cfg)
+          PYEOF
+
+      - name: Overlay custom content 📝
+        run: |
+          # Overwrite about page
+          cp content/_pages/about.md site/_pages/about.md
+
+          # Overwrite bibliography
+          cp content/_bibliography/papers.bib site/_bibliography/papers.bib
+
+          # Copy profile photo (downloaded below) or user-supplied images
+          if [ -d "content/assets/img" ]; then
+            cp -r content/assets/img/. site/assets/img/
+          fi
+
+      - name: Download profile photo 🖼️
+        run: |
+          mkdir -p site/assets/img
+          # Use user-supplied photo if present, otherwise fetch from WordPress
+          if [ ! -f "site/assets/img/prof_pic.jpg" ]; then
+            wget -q -O site/assets/img/prof_pic.jpg \
+              "https://tacocohen.files.wordpress.com/2022/06/screen-shot-2022-06-20-at-10.57.05-2-edited.png" \
+              || echo "Warning: could not download profile photo"
+          fi
+
+      - name: Setup Ruby 💎
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3.5"
+          working-directory: site
+          bundler-cache: true
+
+      - name: Setup Python 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install and Build 🔨
+        working-directory: site
+        run: |
+          sudo apt-get update && sudo apt-get install -y imagemagick
+          pip3 install --upgrade nbconvert
+          export JEKYLL_ENV=production
+          bundle exec jekyll build
+
+      - name: Purge unused CSS 🧹
+        working-directory: site
+        run: |
+          npm install -g purgecss
+          purgecss -c purgecss.config.js
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: site/_site
