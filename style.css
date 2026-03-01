@@ -1,0 +1,170 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 17px;
+  line-height: 1.7;
+  color: #222;
+  background: #fff;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+/* Header */
+header {
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1.5rem;
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: normal;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: #555;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0;
+}
+
+.links a {
+  color: #1a56a0;
+  text-decoration: none;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.9rem;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.links a::after {
+  content: ' ·';
+  color: #999;
+  margin: 0 0.4rem;
+}
+
+.links a:last-child::after {
+  content: '';
+}
+
+/* Sections */
+section {
+  margin-bottom: 2.5rem;
+}
+
+#about p {
+  margin-bottom: 0.9rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #333;
+  margin-bottom: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #eee;
+}
+
+h3 {
+  font-size: 1rem;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: bold;
+  color: #444;
+  margin: 1.4rem 0 0.6rem;
+}
+
+/* Awards list */
+#awards ul {
+  list-style: none;
+  padding: 0;
+}
+
+#awards li {
+  padding: 0.2rem 0;
+  font-size: 0.97rem;
+}
+
+#awards li::before {
+  content: '—';
+  margin-right: 0.5rem;
+  color: #999;
+}
+
+/* Publications */
+.pub-list {
+  list-style: none;
+  padding: 0;
+}
+
+.pub-list li {
+  margin-bottom: 1rem;
+  padding-left: 1rem;
+  border-left: 2px solid #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.pub-title {
+  font-style: italic;
+}
+
+.venue {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.venue strong {
+  color: #a00;
+}
+
+/* Links */
+a {
+  color: #1a56a0;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.7rem;
+  }
+
+  .container {
+    padding: 2rem 1rem 3rem;
+  }
+}
